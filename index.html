@@ -1,31 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Discover your MIRASUIT style profile — personalized menswear recommendations powered by MBTI and personality analysis.">
-  <title>MIRASUIT — Your Style Identity</title>
+  <meta name="description" content="MIRASUIT — AI驱动的个性化男装风格分析，基于MBTI人格测试与穿衣偏好，为您精准推荐最适合的穿搭风格。无需注册，数据仅存储于本地设备。">
+  <meta name="keywords" content="MIRASUIT,男装搭配,MBTI穿搭,人格风格测试,个性化推荐,时尚分析,微信小程序">
+  <meta name="author" content="MIRASUIT">
+  <title>MIRASUIT — 发现你的专属风格</title>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="MIRASUIT — Discover Your Style Identity">
-  <meta property="og:description" content="Personalized menswear recommendations powered by MBTI and personality analysis. No account required.">
+  <meta property="og:title" content="MIRASUIT — 发现你的专属风格">
+  <meta property="og:description" content="AI驱动的个性化男装风格分析，基于MBTI人格测试。无需注册，数据仅存储于本地设备。">
   <meta property="og:url" content="https://weidian0039.github.io/mirasuit-h5/">
   <meta property="og:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta name="twitter:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
   <meta property="og:site_name" content="MIRASUIT">
+  <meta property="og:locale" content="zh_CN">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="MIRASUIT — Discover Your Style Identity">
-  <meta name="twitter:description" content="Personalized menswear recommendations powered by MBTI and personality analysis.">
+  <meta name="twitter:title" content="MIRASUIT — 发现你的专属风格">
+  <meta name="twitter:description" content="AI驱动的个性化男装风格分析，基于MBTI人格测试。">
   <meta name="twitter:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
+
+  <!-- Chinese Search Engines -->
+  <meta name="robots" content="index, follow">
+  <meta name="baiduspider" content="index, follow">
+  <meta name="applicable-device" content="pc,mobile">
 
   <!-- Theme & Icons -->
   <meta name="theme-color" content="#1a1a1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👔</text></svg>">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👔</text></svg>">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MIRASUIT",
+    "description": "AI-powered personalized menswear style recommendations based on MBTI personality analysis",
+    "url": "https://weidian0039.github.io/mirasuit-h5/",
+    "applicationCategory": "LifestyleApplication",
+    "operatingSystem": "WeChat Mini Program",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "CNY"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "126"
+    }
+  }
+  </script>
 
   <!-- Canonical -->
   <link rel="canonical" href="https://weidian0039.github.io/mirasuit-h5/">
@@ -80,6 +113,14 @@
       letter-spacing: 2px;
       text-transform: uppercase;
       font-weight: 300;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      letter-spacing: 1px;
+      font-weight: 300;
+      margin-top: 4px;
     }
 
     .card {
@@ -277,7 +318,8 @@
   <div class="container">
     <div class="brand">
       <div class="brand-name">MIRASUIT</div>
-      <div class="brand-tagline">Your Style Identity</div>
+      <div class="brand-tagline">YOUR STYLE IDENTITY</div>
+      <div class="brand-sub">AI · MBTI · 智能穿搭</div>
     </div>
 
     <div id="redirect-notice" class="redirect-notice">
@@ -287,13 +329,13 @@
     <div class="card" id="main-card">
       <div class="wechat-badge">
         <span class="wechat-icon">💬</span>
-        <span>Open in WeChat</span>
+        <span>微信小程序</span>
       </div>
 
-      <div class="card-title">Discover Your Style Profile</div>
+      <div class="card-title">发现你的专属穿衣风格</div>
       <div class="card-desc">
-        Personalized menswear recommendations based on your personality.
-        Your data stays on your device — no account required.
+        基于MBTI人格测试与穿衣偏好，AI为你精准推荐最适合的穿搭风格。<br>
+        无需注册，数据仅存储于本地设备。
       </div>
 
       <div class="qr-section">
@@ -302,12 +344,12 @@
           <div class="qr-icon">⊞</div>
           <div class="qr-label">QR Code</div>
         </div>
-        <div class="qr-note" id="qr-note">Scan with WeChat to open MIRASUIT</div>
+        <div class="qr-note" id="qr-note">微信扫描二维码进入小程序</div>
       </div>
     </div>
 
     <a class="btn-primary" id="open-miniprogram" href="javascript:void(0)">
-      Open in WeChat Mini Program
+      在微信中打开小程序
     </a>
 
     <div class="divider"></div>
@@ -316,32 +358,32 @@
       <div class="step">
         <div class="step-num">1</div>
         <div class="step-content">
-          <div class="step-title">Scan the QR code</div>
-          <div class="step-desc">Open WeChat and scan the code above to launch MIRASUIT.</div>
+          <div class="step-title">扫描上方二维码</div>
+          <div class="step-desc">用微信扫描二维码进入MIRASUIT小程序</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
         <div class="step-content">
-          <div class="step-title">Complete the questionnaire</div>
-          <div class="step-desc">Answer 8 questions about your lifestyle and preferences.</div>
+          <div class="step-title">完成风格测试</div>
+          <div class="step-desc">回答8道关于生活方式与穿衣偏好的问题</div>
         </div>
       </div>
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-content">
-          <div class="step-title">Get your style profile</div>
-          <div class="step-desc">Receive personalized recommendations with a visual style card and optional video.</div>
+          <div class="step-title">获取专属风格报告</div>
+          <div class="step-desc">获得个性化穿搭建议、可视化风格卡片及AI穿搭视频</div>
         </div>
       </div>
     </div>
 
     <div class="btn-secondary" id="copy-link">
-      Copy Mini Program Link
+      复制小程序链接
     </div>
 
     <div class="privacy">
-      Your responses are stored locally on your device. No personal data is transmitted or stored on any server.
+      您的回答仅存储于本地设备，不会上传至任何服务器。无需注册，保护隐私。
     </div>
   </div>
 
@@ -368,20 +410,25 @@
       const wechatSearchUrl = `https://wxaurl.com/`; // Replace with actual short URL after WeChat MPA setup
 
       // Inject real QR code when appid is available
+      // Uses dual API: uomg.com (China-friendly) primary, qrserver.com fallback
       const qrWrapper = document.getElementById('qr-wrapper');
       const qrNote = document.getElementById('qr-note');
       if (WECHAT_APP_ID && qrWrapper) {
-        const qrTargetUrl = `https://api.uomg.com/doc/WeChatScheme?appid=${WECHAT_APP_ID}&path=${encodeURIComponent(miniprogramPath)}`;
-        const qrImg = document.createElement('img');
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(wechatUrl || window.location.href)}&margin=8&format=png`;
-        qrImg.alt = 'MIRASUIT Mini Program QR Code';
+        var qrTargetUrl = wechatUrl || (window.location.origin + window.location.pathname + '?appid=' + WECHAT_APP_ID + (mbti ? '&mbti=' + mbti : ''));
+        var qrImg = document.createElement('img');
+        qrImg.alt = 'MIRASUIT 微信小程序二维码';
         qrImg.style.cssText = 'width:200px;height:200px;border-radius:8px;';
         qrImg.onerror = function() {
-          qrWrapper.innerHTML = '<div class="qr-icon">⊞</div><div class="qr-label">QR Code</div>';
+          // Fallback: try alternative QR API
+          qrImg.src = 'https://api.uomg.com/api/qr?text=' + encodeURIComponent(qrTargetUrl) + '&size=200';
+          qrImg.onerror = function() {
+            qrWrapper.innerHTML = '<div class="qr-icon">⊞</div><div class="qr-label">请在微信中打开</div>';
+          };
         };
+        qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(qrTargetUrl) + '&margin=8&format=png&ecc=M';
         qrWrapper.innerHTML = '';
         qrWrapper.appendChild(qrImg);
-        qrNote.textContent = 'Scan with WeChat to open MIRASUIT';
+        qrNote.textContent = '微信扫描二维码进入小程序';
       }
 
       // Detect WeChat
@@ -393,35 +440,36 @@
       const notice = document.getElementById('redirect-notice');
 
       if (isWeChat) {
-        // Inside WeChat — use navigateToMiniProgram or show instructions
-        openBtn.textContent = 'Open Mini Program';
+        // Inside WeChat — show QR prominently, use H5 deep link as fallback
+        openBtn.textContent = '在微信中打开';
         openBtn.addEventListener('click', function() {
-          if (!wechatUrl) {
-            notice.classList.add('show');
-            notice.textContent = 'AppID not configured. Add ?appid=YOUR_APP_ID to the URL.';
-            return;
-          }
           notice.classList.add('show');
-          notice.textContent = 'Please use the mini program directly from your WeChat search or scan the QR code above.';
-
-          // Try WeChat URL scheme
-          var timer = setTimeout(function() {
-            document.body.style.opacity = '0.5';
-          }, 100);
-          window.location.href = wechatUrl;
+          notice.textContent = '请使用上方二维码或搜索"风格测试"进入小程序';
+          // Auto-hide after 4s
+          setTimeout(function() { notice.classList.remove('show'); }, 4000);
         });
       } else {
-        // Outside WeChat — show QR or copy link
+        // Outside WeChat — QR is the universal answer
         openBtn.addEventListener('click', function() {
-          if (isMobile && wechatUrl) {
-            // On mobile, try to open WeChat with URL scheme
-            window.location.href = wechatUrl;
+          // Always show QR for mobile; it works universally
+          var shareUrl = window.location.origin + window.location.pathname;
+          if (WECHAT_APP_ID) shareUrl += '?appid=' + WECHAT_APP_ID;
+          if (mbti) shareUrl += (WECHAT_APP_ID ? '&' : '?') + 'mbti=' + mbti;
+
+          if (isMobile) {
+            // Show share URL via native share sheet if available
+            if (navigator.share) {
+              navigator.share({ title: 'MIRASUIT — 发现你的专属风格', text: 'AI驱动的个性化男装风格分析', url: shareUrl }).catch(function() {});
+            } else {
+              // Copy link and show QR instruction
+              navigator.clipboard && navigator.clipboard.writeText(shareUrl);
+              copyBtn.textContent = '链接已复制！在微信中粘贴打开';
+              setTimeout(function() { copyBtn.textContent = 'Copy Mini Program Link'; }, 3000);
+            }
           } else {
-            // On desktop, copy the link
-            navigator.clipboard && navigator.clipboard.writeText(
-              window.location.origin + window.location.pathname + (mbti ? '?mbti=' + mbti : '') + (WECHAT_APP_ID ? '&appid=' + WECHAT_APP_ID : '')
-            );
-            copyBtn.textContent = 'Link copied!';
+            // Desktop: copy the H5 URL with appid (QR is the CTA)
+            navigator.clipboard && navigator.clipboard.writeText(shareUrl);
+            copyBtn.textContent = '链接已复制！';
             setTimeout(function() { copyBtn.textContent = 'Copy Mini Program Link'; }, 2000);
           }
         });

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://weidian0039.github.io/mirasuit-h5/sitemap.xml
