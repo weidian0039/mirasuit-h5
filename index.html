@@ -5,6 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Discover your MIRASUIT style profile — personalized menswear recommendations powered by MBTI and personality analysis.">
   <title>MIRASUIT — Your Style Identity</title>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="MIRASUIT — Discover Your Style Identity">
+  <meta property="og:description" content="Personalized menswear recommendations powered by MBTI and personality analysis. No account required.">
+  <meta property="og:url" content="https://weidian0039.github.io/mirasuit-h5/">
+  <meta property="og:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
+  <meta property="og:site_name" content="MIRASUIT">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MIRASUIT — Discover Your Style Identity">
+  <meta name="twitter:description" content="Personalized menswear recommendations powered by MBTI and personality analysis.">
+  <meta name="twitter:image" content="https://weidian0039.github.io/mirasuit-h5/og-image.svg">
+
+  <!-- Theme & Icons -->
+  <meta name="theme-color" content="#1a1a1a">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👔</text></svg>">
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://weidian0039.github.io/mirasuit-h5/">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -273,11 +297,12 @@
       </div>
 
       <div class="qr-section">
-        <div class="qr-placeholder">
+        <div class="qr-placeholder" id="qr-wrapper">
+          <!-- QR code injected via JS once WECHAT_APP_ID is configured -->
           <div class="qr-icon">⊞</div>
           <div class="qr-label">QR Code</div>
         </div>
-        <div class="qr-note">Scan with WeChat to open MIRASUIT</div>
+        <div class="qr-note" id="qr-note">Scan with WeChat to open MIRASUIT</div>
       </div>
     </div>
 
@@ -341,6 +366,23 @@
         ? `weixin://dl/business/?t=${btoa(miniprogramPath).replace(/=/g, '')}&appid=${WECHAT_APP_ID}`
         : null;
       const wechatSearchUrl = `https://wxaurl.com/`; // Replace with actual short URL after WeChat MPA setup
+
+      // Inject real QR code when appid is available
+      const qrWrapper = document.getElementById('qr-wrapper');
+      const qrNote = document.getElementById('qr-note');
+      if (WECHAT_APP_ID && qrWrapper) {
+        const qrTargetUrl = `https://api.uomg.com/doc/WeChatScheme?appid=${WECHAT_APP_ID}&path=${encodeURIComponent(miniprogramPath)}`;
+        const qrImg = document.createElement('img');
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(wechatUrl || window.location.href)}&margin=8&format=png`;
+        qrImg.alt = 'MIRASUIT Mini Program QR Code';
+        qrImg.style.cssText = 'width:200px;height:200px;border-radius:8px;';
+        qrImg.onerror = function() {
+          qrWrapper.innerHTML = '<div class="qr-icon">⊞</div><div class="qr-label">QR Code</div>';
+        };
+        qrWrapper.innerHTML = '';
+        qrWrapper.appendChild(qrImg);
+        qrNote.textContent = 'Scan with WeChat to open MIRASUIT';
+      }
 
       // Detect WeChat
       const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
