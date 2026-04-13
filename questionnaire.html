@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MIRASUIT — Style Discovery</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --accent: #ff6b35;
+      --accent-light: #fff0eb;
+      --border: #e8e8e8;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Nav bar */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 44px;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .nav-title {
+      font-size: 17px;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      position: fixed;
+      top: 44px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(0,0,0,0.1);
+      z-index: 99;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Main content */
+    .content {
+      flex: 1;
+      padding: 72px 20px 120px;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Question card */
+    .question-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+      margin-bottom: 24px;
+    }
+
+    .question-context {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 400;
+      margin-bottom: 12px;
+      line-height: 1.5;
+      letter-spacing: 0.3px;
+    }
+
+    .question-text {
+      font-size: 18px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .question-counter {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-weight: 300;
+      margin-bottom: 28px;
+    }
+
+    /* Options */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      width: 100%;
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.4;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .option:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .option-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .option.selected .option-dot {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+
+    .option.selected .option-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .btn-back {
+      flex: 0 0 auto;
+      padding: 14px 20px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-back:active {
+      background: var(--bg);
+    }
+
+    .btn-next {
+      flex: 1;
+      padding: 14px 20px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-next:disabled {
+      background: var(--border);
+      color: var(--text-tertiary);
+      cursor: not-allowed;
+    }
+
+    .btn-next:not(:disabled):active {
+      opacity: 0.85;
+      transform: scale(0.98);
+    }
+
+    /* Progress dots */
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 32px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .dot.done {
+      background: var(--accent);
+      opacity: 0.4;
+    }
+
+    .dot.current {
+      background: var(--accent);
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    /* Loading */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(250,250,250,0.95);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .loading-overlay.show { display: flex; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    /* Start screen */
+    .start-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 44px);
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .start-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+
+    .start-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .start-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 320px;
+    }
+
+    .btn-start {
+      display: inline-block;
+      padding: 16px 48px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-start:active { opacity: 0.85; }
+
+    .start-privacy {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 24px;
+      line-height: 1.6;
+    }
+
+    /* Hidden */
+    .hidden { display: none !important; }
+
+    @media (max-width: 480px) {
+      .content { padding: 68px 16px 110px; }
+      .question-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">正在分析你的风格...</div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav" id="nav" style="display:none">
+    <div class="nav-title">风格发现</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progress-wrap" style="display:none">
+    <div class="progress-bar" id="progress-bar" style="width:12.5%"></div>
+  </div>
+
+  <!-- Start screen -->
+  <div class="start-screen" id="start-screen">
+    <div class="start-icon">✨</div>
+    <div class="start-title">发现你的风格基因</div>
+    <div class="start-desc">
+      8道题，基于MBTI人格理论<br>
+      揭示你最真实的穿着哲学<br>
+      3分钟，找到属于你的风格
+    </div>
+    <button class="btn-start" id="btn-start">开始探索</button>
+    <div class="start-privacy">
+      你的回答仅存储在本地设备<br>
+      不上传任何服务器
+    </div>
+  </div>
+
+  <!-- Question content -->
+  <div class="content hidden" id="question-content">
+    <div class="question-card">
+      <div class="question-context" id="question-context"></div>
+      <div class="question-text" id="question-text"></div>
+      <div class="question-counter" id="question-counter"></div>
+      <div class="options" id="options"></div>
+    </div>
+
+    <div class="progress-dots" id="progress-dots"></div>
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav hidden" id="bottom-nav">
+    <button class="btn-back" id="btn-back">上一步</button>
+    <button class="btn-next" id="btn-next" disabled>下一步</button>
+  </div>
+
+  <script>
+    // ─── Data ───────────────────────────────────────────────
+    const QUESTIONS = [
+      {
+        key: 'social',
+        context: '你的社交节奏塑造了你与世界相处的方式——也定义了最适合你的衣橱。',
+        question: '在社交场合，你通常：',
+        options: [
+          { text: '主动结识新朋友，充满活力', value: 'E' },
+          { text: '偏好与少数人深度交流', value: 'I' },
+          { text: '两者平衡', value: 'N' }
+        ]
+      },
+      {
+        key: 'information',
+        context: '你如何处理信息，会在每一个小选择中展现——它们共同构建了你的风格哲学。',
+        question: '做决定时，你更依赖：',
+        options: [
+          { text: '具体的事实和过往经验', value: 'S' },
+          { text: '直觉和未来的可能性', value: 'N' },
+          { text: '两者结合', value: 'N' }
+        ]
+      },
+      {
+        key: 'decision',
+        context: '引导你选择的价值观，也定义了你对"得体"的理解。',
+        question: '你更看重：',
+        options: [
+          { text: '逻辑分析和客观标准', value: 'T' },
+          { text: '个人价值观与和谐', value: 'F' },
+          { text: '视情况而定', value: 'N' }
+        ]
+      },
+      {
+        key: 'lifestyle',
+        context: '结构感或自发性——两者在讲究的衣橱里都有位置。',
+        question: '你偏好的规划方式是：',
+        options: [
+          { text: '有结构、有组织、已决定', value: 'J' },
+          { text: '灵活、自发、开放', value: 'P' },
+          { text: '视情况而定', value: 'N' }
+        ]
+      },
+      {
+        key: 'motivation',
+        context: '理解驱动你的核心，能帮助我们触及你风格的心。',
+        question: '什么最能驱动你？',
+        options: [
+          { text: '追求成功与达成目标', value: '3' },
+          { text: '帮助他人、创造和谐', value: '2' },
+          { text: '追求知识与理解', value: '5' },
+          { text: '维护安全感与稳定', value: '6' },
+          { text: '表达个性与真实', value: '4' }
+        ]
+      },
+      {
+        key: 'stylePreference',
+        context: '那套让你感觉"这就是我"的西装——那是我们出发的起点。',
+        question: '你最理想的西装风格是：',
+        options: [
+          { text: '简约低调', value: 'minimalist' },
+          { text: '大胆有态度', value: 'bold' },
+          { text: '经典永恒', value: 'classic' },
+          { text: '先锋实验', value: 'experimental' }
+        ]
+      },
+      {
+        key: 'detailLevel',
+        context: '好与优秀之间的距离，藏在细节里。',
+        question: '关于细节：',
+        options: [
+          { text: '每个细节都必须完美', value: 'high' },
+          { text: '整体印象最重要', value: 'low' },
+          { text: '在细节和大局之间平衡', value: 'medium' }
+        ]
+      },
+      {
+        key: 'riskTolerance',
+        context: '衣橱是一个有生命的东西——它会随着你成长。',
+        question: '你对待新风格的态度：',
+        options: [
+          { text: '偏好经过验证的选择', value: 'conservative' },
+          { text: '喜欢实验和冒险', value: 'adventurous' },
+          { text: '有选择地尝试', value: 'moderate' }
+        ]
+      }
+    ];
+
+    const STORAGE_KEY = 'mirasuit_q_responses';
+
+    // ─── State ───────────────────────────────────────────────
+    let currentIndex = 0;
+    let responses = {};
+
+    // ─── Init ────────────────────────────────────────────────
+    function init() {
+      // Load existing responses
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          responses = JSON.parse(saved);
+        }
+      } catch (e) {}
+
+      // Check if we should resume or start fresh
+      const hasResponses = Object.keys(responses).length > 0;
+
+      document.getElementById('btn-start').addEventListener('click', () => {
+        startQuestionnaire();
+      });
+
+      document.getElementById('btn-back').addEventListener('click', () => {
+        if (currentIndex > 0) {
+          currentIndex--;
+          renderQuestion();
+        } else {
+          // Go back to start
+          showStart();
+        }
+      });
+
+      document.getElementById('btn-next').addEventListener('click', () => {
+        const category = QUESTIONS[currentIndex].key;
+        if (!responses[category]) return;
+
+        if (currentIndex < QUESTIONS.length - 1) {
+          currentIndex++;
+          renderQuestion();
+        } else {
+          submitQuestionnaire();
+        }
+      });
+    }
+
+    function startQuestionnaire() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('nav').style.display = 'flex';
+      document.getElementById('progress-wrap').style.display = 'block';
+      document.getElementById('question-content').classList.remove('hidden');
+      document.getElementById('bottom-nav').classList.remove('hidden');
+
+      // Resume from last answered question
+      const answeredKeys = Object.keys(responses);
+      if (answeredKeys.length > 0) {
+        const lastAnsweredIndex = answeredKeys.reduce((max, key) => {
+          const idx = QUESTIONS.findIndex(q => q.key === key);
+          return idx > max ? idx : max;
+        }, -1);
+        currentIndex = Math.min(lastAnsweredIndex + 1, QUESTIONS.length - 1);
+        if (currentIndex >= QUESTIONS.length - 1 && !responses[QUESTIONS[QUESTIONS.length - 1].key]) {
+          currentIndex = QUESTIONS.length - 1;
+        }
+      }
+
+      renderQuestion();
+    }
+
+    function showStart() {
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('nav').style.display = 'none';
+      document.getElementById('progress-wrap').style.display = 'none';
+      document.getElementById('question-content').classList.add('hidden');
+      document.getElementById('bottom-nav').classList.add('hidden');
+    }
+
+    function renderQuestion() {
+      const q = QUESTIONS[currentIndex];
+      const progress = ((currentIndex + 1) / QUESTIONS.length) * 100;
+
+      document.getElementById('question-context').textContent = q.context;
+      document.getElementById('question-text').textContent = q.question;
+      document.getElementById('question-counter').textContent = `${currentIndex + 1} / ${QUESTIONS.length}`;
+      document.getElementById('progress-bar').style.width = progress + '%';
+
+      // Render options
+      const optionsEl = document.getElementById('options');
+      optionsEl.innerHTML = '';
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option' + (responses[q.key] === opt.value ? ' selected' : '');
+        btn.innerHTML = `<span class="option-dot"></span><span>${opt.text}</span>`;
+        btn.addEventListener('click', () => selectOption(q.key, opt.value, btn));
+        optionsEl.appendChild(btn);
+      });
+
+      // Render dots
+      const dotsEl = document.getElementById('progress-dots');
+      dotsEl.innerHTML = '';
+      QUESTIONS.forEach((_, i) => {
+        const dot = document.createElement('div');
+        if (i < currentIndex) dot.className = 'dot done';
+        else if (i === currentIndex) dot.className = 'dot current';
+        else dot.className = 'dot';
+        dotsEl.appendChild(dot);
+      });
+
+      // Update nav buttons
+      const backBtn = document.getElementById('btn-back');
+      const nextBtn = document.getElementById('btn-next');
+      backBtn.style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+      nextBtn.textContent = currentIndex === QUESTIONS.length - 1 ? '查看结果' : '下一步';
+      nextBtn.disabled = !responses[q.key];
+    }
+
+    function selectOption(key, value, btnEl) {
+      responses[key] = value;
+      saveResponses();
+
+      // Update UI
+      document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+      btnEl.classList.add('selected');
+      document.getElementById('btn-next').disabled = false;
+
+      // Auto advance after 300ms
+      setTimeout(() => {
+        if (currentIndex < QUESTIONS.length - 1) {
+          currentIndex++;
+          renderQuestion();
+        } else {
+          submitQuestionnaire();
+        }
+      }, 300);
+    }
+
+    function saveResponses() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(responses));
+      } catch (e) {}
+    }
+
+    function submitQuestionnaire() {
+      const allAnswered = QUESTIONS.every(q => responses[q.key]);
+      if (!allAnswered) return;
+
+      document.getElementById('loading').classList.add('show');
+
+      // Simulate brief analysis delay for UX
+      setTimeout(() => {
+        // Compute preliminary MBTI
+        let mbti = '';
+        const scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        Object.entries(responses).forEach(([key, val]) => {
+          switch(key) {
+            case 'social': val === 'E' ? scores.E++ : scores.I++; break;
+            case 'information': val === 'S' ? scores.S++ : scores.N++; break;
+            case 'decision': val === 'T' ? scores.T++ : scores.F++; break;
+            case 'lifestyle': val === 'J' ? scores.J++ : scores.P++; break;
+          }
+        });
+
+        mbti += scores.E > scores.I ? 'E' : 'I';
+        mbti += scores.S > scores.N ? 'S' : 'N';
+        mbti += scores.T > scores.F ? 'T' : 'F';
+        mbti += scores.J > scores.P ? 'J' : 'P';
+
+        // Infer style
+        const styleMap = {
+          'ENTJ': 'business_elite', 'ESTJ': 'business_elite',
+          'ENFJ': 'urban_gentleman', 'ESFJ': 'urban_gentleman',
+          'ESTP': 'active_stylish', 'ESFP': 'active_stylish',
+          'INTJ': 'minimalist_life', 'INFJ': 'minimalist_life',
+          'ENTP': 'urban_gentleman', 'ENFP': 'active_stylish',
+          'ISTJ': 'classic_refined', 'ISFJ': 'classic_refined',
+          'ISTP': 'active_stylish', 'ISFP': 'classic_refined',
+          'INTP': 'minimalist_life', 'INFP': 'minimalist_life'
+        };
+
+        const style = styleMap[mbti] || 'classic_refined';
+
+        // Save to storage
+        localStorage.setItem('mirasuit_result', JSON.stringify({
+          mbti,
+          style,
+          responses,
+          timestamp: new Date().toISOString()
+        }));
+
+        document.getElementById('loading').classList.remove('show');
+        window.location.href = 'results.html';
+      }, 1800);
+    }
+
+    // ─── Boot ───────────────────────────────────────────────
+    init();
+  </script>
+</body>
+</html>

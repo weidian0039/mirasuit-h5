@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MIRASUIT — 你的风格档案</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --accent: #ff6b35;
+      --accent-light: #fff0eb;
+      --border: #e8e8e8;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 40px 0 24px;
+    }
+
+    .brand-name {
+      font-size: 13px;
+      letter-spacing: 4px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* Style card */
+    .style-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      margin-bottom: 20px;
+    }
+
+    .style-hero {
+      background: #1a1a1a;
+      padding: 40px 32px;
+      text-align: center;
+      position: relative;
+    }
+
+    .style-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(255,107,53,0.15);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .mbti-type {
+      font-size: 48px;
+      font-weight: 200;
+      color: #fff;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .mbti-label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+
+    .style-name {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .style-tagline {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    /* Style description */
+    .style-description {
+      padding: 28px 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .description-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    /* Color palette */
+    .palette-section {
+      padding: 0 24px 28px;
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 8px;
+    }
+
+    .swatch {
+      flex: 1;
+      height: 40px;
+      border-radius: 8px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+      font-weight: 300;
+    }
+
+    /* MBTI breakdown */
+    .mbti-breakdown {
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .mbti-dim {
+      text-align: center;
+    }
+
+    .mbti-dim-letters {
+      font-size: 16px;
+      font-weight: 300;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+
+    .mbti-dim-type {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .mbti-dim-desc {
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 2px;
+    }
+
+    /* Recommendations */
+    .recs-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+    }
+
+    .rec-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rec-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .rec-item:first-child { padding-top: 0; }
+
+    .rec-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-light);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .rec-content { flex: 1; }
+
+    .rec-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .rec-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    /* CTA */
+    .cta-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:active { opacity: 0.85; }
+
+    .btn-secondary {
+      display: block;
+      text-align: center;
+      padding: 15px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 300;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:active {
+      background: var(--bg);
+    }
+
+    /* No result */
+    .no-result {
+      text-align: center;
+      padding: 80px 0;
+    }
+
+    .no-result-icon { font-size: 48px; margin-bottom: 16px; }
+    .no-result-title { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .no-result-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+
+    /* Occasion chips */
+    .occasion-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      background: var(--accent-light);
+      border: 1px solid rgba(255,107,53,0.2);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* Privacy note */
+    .privacy-note {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .container { padding: 0 16px 80px; }
+      .style-hero { padding: 32px 24px; }
+      .mbti-type { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app">
+    <!-- Content injected by JS -->
+  </div>
+
+  <script>
+    // ─── Style Profiles ───────────────────────────────────
+    const PROFILES = {
+      business_elite: {
+        name: '商务精英',
+        tagline: '目标清晰，掌控全场',
+        description: '你的衣橱是一套精密系统——每一件单品都有其存在的理由。你偏爱结构感强、剪裁精准的服装，颜色以深色系为主，但会在领带、口袋巾等细节处展现品味。权力 Dressing 不是炫富，而是对场合的尊重与对自我的表达。',
+        colors: [
+          { hex: '#1a1a1a', name: '碳黑' },
+          { hex: '#2c3e6b', name: '深海蓝' },
+          { hex: '#7d6b5a', name: '象灰' },
+          { hex: '#fafafa', name: '月白' }
+        ],
+        recommendations: [
+          { icon: '🎯', title: '定制西装', desc: '深蓝或炭灰色，双排扣或单排扣平驳领，剪裁贴合肩线。' },
+          { icon: '👔', title: '衬衫搭配', desc: '白色或淡蓝色法式衬衫，袖口露出外套1cm为佳。' },
+          { icon: '🎨', title: '配饰哲学', desc: '银色袖扣、简约领带夹。少即是多，质感说话。' }
+        ],
+        occasions: ['商务会议', '谈判签约', '重要演讲', '高管峰会']
+      },
+      urban_gentleman: {
+        name: '都市绅士',
+        tagline: '温暖而有力量',
+        description: '你的风格是有温度的——既讲究又不刻意，既精致又保持亲和。你善于在不同场合间优雅切换，服装是你社交资本的一部分，但从不喧宾夺主。舒适与得体之间的平衡，是你一直在做的事。',
+        colors: [
+          { hex: '#4a5568', name: '石墨灰' },
+          { hex: '#6b8e6b', name: '橄榄绿' },
+          { hex: '#b8860b', name: '金棕' },
+          { hex: '#fafafa', name: '米白' }
+        ],
+        recommendations: [
+          { icon: '🧥', title: '休闲西装', desc: '浅灰色或卡其色休闲西装，搭配针织领带或开放式领口。' },
+          { icon: '⌚', title: '腕表选择', desc: '皮带款正装表或简约皮带机械表，表盘简洁为上。' },
+          { icon: '🧣', title: '层次穿搭', desc: '在西装内搭配高领针织衫，天冷时外加大衣或风衣。' }
+        ],
+        occasions: ['商务晚宴', '朋友聚会', '约会', '品牌活动']
+      },
+      active_stylish: {
+        name: '活力型男',
+        tagline: '风格即是态度',
+        description: '你的穿着是一种自我表达——你不喜欢被定义，但你的风格本身就在说话。你敢穿、懂穿，知道如何在人群中脱颖而出又不失分寸。服装是你的个性标签，每一套都是一次小型的自我宣言。',
+        colors: [
+          { hex: '#1a1a1a', name: '经典黑' },
+          { hex: '#c0392b', name: '学院红' },
+          { hex: '#2980b9', name: '电光蓝' },
+          { hex: '#fafafa', name: '纯白' }
+        ],
+        recommendations: [
+          { icon: '🕶️', title: '配饰点睛', desc: '一副设计感眼镜、一条色彩领带、或一双亮色袜子。单品制胜。' },
+          { icon: '👕', title: '版型选择', desc: '修身剪裁，强调肩线轮廓。不要松松垮垮，要干净利落。' },
+          { icon: '🎭', title: '混搭哲学', desc: '休闲西装搭配白色T恤，smart casual 是你的主场。' }
+        ],
+        occasions: ['派对', '约会', '艺术展览', '音乐节']
+      },
+      minimalist_life: {
+        name: '简约生活',
+        tagline: '少即是多，细节即一切',
+        description: '你相信最好的设计是看不见设计——剪裁的精准、面料的质感、颜色的和谐，这些是你评判一件衣服的核心标准。你的衣橱精简但每一件都是精品，你不需要多，你需要对。风格哲学：穿什么，让衣服自己说。',
+        colors: [
+          { hex: '#1a1a1a', name: '墨黑' },
+          { hex: '#fafafa', name: '素白' },
+          { hex: '#8b8b8b', name: '银灰' },
+          { hex: '#4a4a4a', name: '炭灰' }
+        ],
+        recommendations: [
+          { icon: '👔', title: '面料优先', desc: '羊毛、羊绒、埃及棉——面料的质感远重要于品牌标识。' },
+          { icon: '📏', title: '合身即一切', desc: '肩线对齐、袖长刚好、衣长比例协调。买衣服前先买卷尺。' },
+          { icon: '🧺', title: '胶囊衣橱', desc: '10件核心单品可搭配出所有场合。买少，买精。' }
+        ],
+        occasions: ['创意会议', '日常通勤', '咖啡馆', '独处时光']
+      },
+      classic_refined: {
+        name: '经典绅士',
+        tagline: '永恒胜过潮流',
+        description: '你是风格的长跑选手——不为趋势所动，只为经典买单。你的衣橱有着清晰的逻辑：白衬衫、蓝西装、灰色裤装、棕色皮鞋，这套体系你已经穿了几十年，还会继续穿下去。优雅不是追赶，是沉淀。你的风格经得起时间。',
+        colors: [
+          { hex: '#1a3a5c', name: '皇家蓝' },
+          { hex: '#6b4423', name: '马鞍棕' },
+          { hex: '#1a1a1a', name: '纯黑' },
+          { hex: '#fafafa', name: '象牙白' }
+        ],
+        recommendations: [
+          { icon: '👞', title: '皮鞋投资', desc: '一双黑色牛津鞋、一双棕色孟克鞋。鞋子是绅士的名片。' },
+          { icon: '🧥', title: '外套体系', desc: '海军蓝呢大衣或卡其色风衣，十年不过时。' },
+          { icon: '📐', title: '领带学问', desc: '7cm宽度是经典，斜纹或点纹最安全，真丝优于化纤。' }
+        ],
+        occasions: ['正式场合', '传统商务', '婚礼', '节庆活动']
+      }
+    };
+
+    // ─── MBTI Descriptions ────────────────────────────────
+    const MBTI_DESC = {
+      'E': '外向 · 从社交中获得能量',
+      'I': '内向 · 从独处中获得能量',
+      'S': '实感 · 关注具体事实',
+      'N': '直觉 · 关注可能性与模式',
+      'T': '思考 · 依据逻辑做决定',
+      'F': '情感 · 依据价值观做决定',
+      'J': '判断 · 喜欢计划与结构',
+      'P': '知觉 · 喜欢灵活与适应'
+    };
+
+    // ─── Render ──────────────────────────────────────────
+    function render() {
+      const app = document.getElementById('app');
+
+      try {
+        const data = JSON.parse(localStorage.getItem('mirasuit_result') || 'null');
+        if (!data) {
+          app.innerHTML = noResultHTML();
+          return;
+        }
+
+        const profile = PROFILES[data.style] || PROFILES.classic_refined;
+        const mbti = data.mbti || 'XXXX';
+
+        app.innerHTML = `
+          <div class="header">
+            <div class="brand-name">MIRASUIT</div>
+            <div class="header-title">你的风格档案</div>
+          </div>
+
+          <div class="style-card">
+            <div class="style-hero">
+              <div class="style-badge">MBTI STYLE</div>
+              <div class="mbti-type">${mbti}</div>
+              <div class="mbti-label">${MBTI_DESC[mbti[0]] || ''} · ${MBTI_DESC[mbti[1]] || ''} · ${MBTI_DESC[mbti[2]] || ''} · ${MBTI_DESC[mbti[3]] || ''}</div>
+              <div class="style-name">${profile.name}</div>
+              <div class="style-tagline">${profile.tagline}</div>
+            </div>
+
+            <div class="style-description">
+              <div class="section-title">风格解读</div>
+              <div class="description-text">${profile.description}</div>
+            </div>
+
+            <div class="palette-section">
+              <div class="section-title">推荐色彩体系</div>
+              <div class="color-swatches">
+                ${profile.colors.map(c => `
+                  <div class="swatch" style="background:${c.hex}">${c.name}</div>
+                `).join('')}
+              </div>
+            </div>
+
+            <div class="mbti-breakdown">
+              <div class="mbti-dim">
+                <div class="mbti-dim-letters">EI</div>
+                <div class="mbti-dim-type">${mbti[0]}</div>
+                <div class="mbti-dim-desc">${mbti[0] === 'E' ? '外向型' : '内向型'}</div>
+              </div>
+              <div class="mbti-dim">
+                <div class="mbti-dim-letters">SN</div>
+                <div class="mbti-dim-type">${mbti[1]}</div>
+                <div class="mbti-dim-desc">${mbti[1] === 'S' ? '实感型' : '直觉型'}</div>
+              </div>
+              <div class="mbti-dim">
+                <div class="mbti-dim-letters">TF</div>
+                <div class="mbti-dim-type">${mbti[2]}</div>
+                <div class="mbti-dim-desc">${mbti[2] === 'T' ? '思考型' : '情感型'}</div>
+              </div>
+              <div class="mbti-dim">
+                <div class="mbti-dim-letters">JP</div>
+                <div class="mbti-dim-type">${mbti[3]}</div>
+                <div class="mbti-dim-desc">${mbti[3] === 'J' ? '判断型' : '知觉型'}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="recs-card">
+            <div class="section-title" style="padding:0 0 16px">穿着建议</div>
+            ${profile.recommendations.map(r => `
+              <div class="rec-item">
+                <div class="rec-icon">${r.icon}</div>
+                <div class="rec-content">
+                  <div class="rec-title">${r.title}</div>
+                  <div class="rec-desc">${r.desc}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="recs-card">
+            <div class="section-title" style="padding:0 0 4px">适合场合</div>
+            <div class="occasion-chips">
+              ${profile.occasions.map(o => `<span class="chip">${o}</span>`).join('')}
+            </div>
+          </div>
+
+          <div class="cta-section">
+            <a href="questionnaire.html" class="btn-primary">重新测试</a>
+            <a href="share.html" class="btn-secondary">生成分享卡片</a>
+          </div>
+
+          <div class="privacy-note">
+            你的回答仅存储在本地设备<br>
+            不上传任何服务器
+          </div>
+        `;
+      } catch(e) {
+        app.innerHTML = noResultHTML();
+      }
+    }
+
+    function noResultHTML() {
+      return `
+        <div class="no-result">
+          <div class="no-result-icon">📋</div>
+          <div class="no-result-title">暂无风格档案</div>
+          <div class="no-result-desc">先完成风格测试，获取你的专属推荐</div>
+          <a href="questionnaire.html" class="btn-primary">开始测试</a>
+        </div>
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>

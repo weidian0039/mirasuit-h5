@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MIRASUIT — 生成分享卡片</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #666;
+      --text-tertiary: #999;
+      --accent: #ff6b35;
+      --accent-light: #fff0eb;
+      --border: #e8e8e8;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 20px 40px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      padding: 40px 0 32px;
+    }
+
+    .brand-name {
+      font-size: 12px;
+      letter-spacing: 4px;
+      color: var(--text-tertiary);
+      text-transform: uppercase;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* Card preview */
+    .card-preview {
+      background: var(--card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      margin-bottom: 24px;
+    }
+
+    .card-canvas-wrap {
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+      background: #f5f5f5;
+    }
+
+    canvas {
+      border-radius: 8px;
+      max-width: 100%;
+    }
+
+    /* Template selector */
+    .template-section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 14px;
+      letter-spacing: 0.5px;
+    }
+
+    .templates {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .template-thumb {
+      flex-shrink: 0;
+      width: 80px;
+      height: 112px;
+      border-radius: 8px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .template-thumb.active {
+      border-color: var(--accent);
+    }
+
+    .template-thumb canvas {
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+    }
+
+    .template-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 9px;
+      text-align: center;
+      padding: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    /* CTA buttons */
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      display: block;
+      text-align: center;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:active { opacity: 0.85; }
+
+    .btn-secondary {
+      display: block;
+      text-align: center;
+      padding: 15px;
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 300;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-secondary:active { background: var(--bg); }
+
+    /* Download info */
+    .download-tip {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(26,26,26,0.9);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 24px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* No result */
+    .no-result {
+      text-align: center;
+      padding: 80px 0;
+    }
+
+    .no-result-icon { font-size: 48px; margin-bottom: 16px; }
+    .no-result-title { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .no-result-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <div class="container" id="app"></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── Style data (same as results.html) ─────────────
+    const PROFILES = {
+      business_elite: {
+        name: '商务精英',
+        tagline: '目标清晰，掌控全场',
+        mbti: 'ENTJ',
+        colors: ['#1a1a1a', '#2c3e6b', '#7d6b5a', '#fafafa'],
+        accent: '#ff6b35'
+      },
+      urban_gentleman: {
+        name: '都市绅士',
+        tagline: '温暖而有力量',
+        mbti: 'ENFJ',
+        colors: ['#4a5568', '#6b8e6b', '#b8860b', '#fafafa'],
+        accent: '#6b8e6b'
+      },
+      active_stylish: {
+        name: '活力型男',
+        tagline: '风格即是态度',
+        mbti: 'ESFP',
+        colors: ['#1a1a1a', '#c0392b', '#2980b9', '#fafafa'],
+        accent: '#c0392b'
+      },
+      minimalist_life: {
+        name: '简约生活',
+        tagline: '少即是多',
+        mbti: 'INTJ',
+        colors: ['#1a1a1a', '#fafafa', '#8b8b8b', '#4a4a4a'],
+        accent: '#8b8b8b'
+      },
+      classic_refined: {
+        name: '经典绅士',
+        tagline: '永恒胜过潮流',
+        mbti: 'ISTJ',
+        colors: ['#1a3a5c', '#6b4423', '#1a1a1a', '#fafafa'],
+        accent: '#1a3a5c'
+      }
+    };
+
+    const TEMPLATES = [
+      { id: 'dark', name: '经典黑' },
+      { id: 'light', name: '纯净白' },
+      { id: 'gradient', name: '渐变橙' }
+    ];
+
+    let currentTemplate = 'dark';
+    let currentData = null;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // ─── Canvas drawing ─────────────────────────────────
+    function drawCard(template, data, canvas) {
+      const W = 320, H = 448;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      const profile = PROFILES[data.style] || PROFILES.classic_refined;
+      const mbti = data.mbti || 'XXXX';
+      const accent = profile.accent;
+
+      if (template === 'dark') {
+        // Dark card
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(0, 0, W, H);
+
+        // Brand
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.letterSpacing = '4px';
+        ctx.fillText('M I R A S U I T', 24, 32);
+
+        // Style name
+        ctx.fillStyle = '#fff';
+        ctx.font = '600 28px -apple-system, sans-serif';
+        ctx.fillText(profile.name, 24, 80);
+
+        // Tagline
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = '300 13px -apple-system, sans-serif';
+        ctx.fillText(profile.tagline, 24, 106);
+
+        // Divider
+        ctx.fillStyle = accent;
+        ctx.fillRect(24, 124, 40, 2);
+
+        // MBTI
+        ctx.fillStyle = '#fff';
+        ctx.font = '200 56px -apple-system, sans-serif';
+        ctx.fillText(mbti, 24, 210);
+
+        // Color swatches
+        const swatchY = 240;
+        const swatchSize = 32;
+        const swatchGap = 8;
+        profile.colors.forEach((c, i) => {
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.roundRect(24 + i * (swatchSize + swatchGap), swatchY, swatchSize, swatchSize, 4);
+          ctx.fill();
+        });
+
+        // Occasions
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.fillText('适合场合', 24, 320);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.8)';
+        ctx.font = '300 13px -apple-system, sans-serif';
+        const occasions = { business_elite: '商务会议 · 谈判签约 · 重要演讲',
+          urban_gentleman: '商务晚宴 · 朋友聚会 · 约会',
+          active_stylish: '派对 · 约会 · 艺术展览 · 音乐节',
+          minimalist_life: '创意会议 · 日常通勤 · 咖啡馆',
+          classic_refined: '正式场合 · 传统商务 · 婚礼' };
+        ctx.fillText(occasions[data.style] || '', 24, 342);
+
+        // Bottom
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fillRect(0, H - 60, W, 60);
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '300 10px -apple-system, sans-serif';
+        ctx.fillText('发现你的风格基因 · mirasuit.com', 24, H - 28);
+
+      } else if (template === 'light') {
+        // Light card
+        ctx.fillStyle = '#fafafa';
+        ctx.fillRect(0, 0, W, H);
+
+        // Top accent band
+        ctx.fillStyle = accent;
+        ctx.fillRect(0, 0, W, 6);
+
+        // Brand
+        ctx.fillStyle = 'rgba(26,26,26,0.4)';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.fillText('M I R A S U I T', 24, 36);
+
+        // MBTI large
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '200 72px -apple-system, sans-serif';
+        ctx.fillText(mbti, 24, 130);
+
+        // Style name
+        ctx.fillStyle = accent;
+        ctx.font = '600 22px -apple-system, sans-serif';
+        ctx.fillText(profile.name, 24, 168);
+
+        // Tagline
+        ctx.fillStyle = '#666';
+        ctx.font = '300 13px -apple-system, sans-serif';
+        ctx.fillText(profile.tagline, 24, 194);
+
+        // Divider
+        ctx.fillStyle = '#e8e8e8';
+        ctx.fillRect(24, 216, W - 48, 1);
+
+        // Color swatches
+        const swatchY = 240;
+        const swatchSize = 32;
+        const swatchGap = 8;
+        profile.colors.forEach((c, i) => {
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.roundRect(24 + i * (swatchSize + swatchGap), swatchY, swatchSize, swatchSize, 4);
+          ctx.fill();
+        });
+
+        // Personality label
+        ctx.fillStyle = '#999';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.fillText('你的MBTI风格类型', 24, 320);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '300 13px -apple-system, sans-serif';
+        ctx.fillText(mbti + ' — ' + profile.name, 24, 342);
+
+        // Bottom
+        ctx.fillStyle = '#f0f0f0';
+        ctx.fillRect(0, H - 56, W, 56);
+        ctx.fillStyle = '#999';
+        ctx.font = '300 10px -apple-system, sans-serif';
+        ctx.fillText('发现你的风格基因 · mirasuit.com', 24, H - 24);
+
+      } else {
+        // Gradient card
+        const grad = ctx.createLinearGradient(0, 0, W, H);
+        grad.addColorStop(0, '#1a1a1a');
+        grad.addColorStop(1, '#2d1f1a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Accent circle
+        ctx.fillStyle = accent + '30';
+        ctx.beginPath();
+        ctx.arc(W - 60, 60, 100, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Brand
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.fillText('M I R A S U I T', 24, 32);
+
+        // MBTI large
+        ctx.fillStyle = '#fff';
+        ctx.font = '200 56px -apple-system, sans-serif';
+        ctx.fillText(mbti, 24, 130);
+
+        // Style name
+        ctx.fillStyle = accent;
+        ctx.font = '600 26px -apple-system, sans-serif';
+        ctx.fillText(profile.name, 24, 174);
+
+        // Tagline
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = '300 13px -apple-system, sans-serif';
+        ctx.fillText(profile.tagline, 24, 200);
+
+        // Divider
+        ctx.fillStyle = accent;
+        ctx.fillRect(24, 224, 40, 2);
+
+        // Color swatches
+        const swatchY = 252;
+        const swatchSize = 28;
+        const swatchGap = 6;
+        profile.colors.forEach((c, i) => {
+          ctx.fillStyle = c;
+          ctx.beginPath();
+          ctx.roundRect(24 + i * (swatchSize + swatchGap), swatchY, swatchSize, swatchSize, 4);
+          ctx.fill();
+        });
+
+        // Occasion text
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '300 11px -apple-system, sans-serif';
+        ctx.fillText('适合场合', 24, 340);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = '300 12px -apple-system, sans-serif';
+        const occ = { business_elite: '商务会议 · 谈判签约',
+          urban_gentleman: '商务晚宴 · 朋友聚会',
+          active_stylish: '派对 · 约会 · 艺术展览',
+          minimalist_life: '创意会议 · 日常通勤',
+          classic_refined: '正式场合 · 传统商务' };
+        ctx.fillText(occ[data.style] || '', 24, 360);
+
+        // Bottom bar
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(0, H - 52, W, 52);
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '300 10px -apple-system, sans-serif';
+        ctx.fillText('mirasuit.com · 你的风格身份', 24, H - 22);
+      }
+    }
+
+    // ─── Render ──────────────────────────────────────────
+    function render() {
+      const app = document.getElementById('app');
+
+      try {
+        currentData = JSON.parse(localStorage.getItem('mirasuit_result') || 'null');
+        if (!currentData) {
+          app.innerHTML = noResultHTML();
+          return;
+        }
+
+        app.innerHTML = `
+          <div class="header">
+            <div class="brand-name">MIRASUIT</div>
+            <div class="header-title">生成分享卡片</div>
+          </div>
+
+          <div class="card-preview">
+            <div class="card-canvas-wrap">
+              <canvas id="main-canvas"></canvas>
+            </div>
+          </div>
+
+          <div class="template-section">
+            <div class="section-title">选择模板</div>
+            <div class="templates" id="templates"></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn-primary" id="btn-download">保存到相册</button>
+            <a href="results.html" class="btn-secondary">返回结果</a>
+          </div>
+
+          <div class="download-tip">
+            长按卡片可保存到相册<br>
+            微信内可直接分享给朋友
+          </div>
+        `;
+
+        // Draw main canvas
+        const mainCanvas = document.getElementById('main-canvas');
+        drawCard(currentTemplate, currentData, mainCanvas);
+
+        // Draw template thumbnails
+        const templatesEl = document.getElementById('templates');
+        TEMPLATES.forEach(t => {
+          const thumb = document.createElement('div');
+          thumb.className = 'template-thumb' + (t.id === currentTemplate ? ' active' : '');
+          const c = document.createElement('canvas');
+          c.width = 80 * (window.devicePixelRatio || 1);
+          c.height = 112 * (window.devicePixelRatio || 1);
+          drawCard(t.id, currentData, c);
+          const label = document.createElement('div');
+          label.className = 'template-label';
+          label.textContent = t.name;
+          thumb.appendChild(c);
+          thumb.appendChild(label);
+          thumb.addEventListener('click', () => {
+            currentTemplate = t.id;
+            document.querySelectorAll('.template-thumb').forEach(el => el.classList.remove('active'));
+            thumb.classList.add('active');
+            drawCard(currentTemplate, currentData, mainCanvas);
+          });
+          templatesEl.appendChild(thumb);
+        });
+
+        // Download button
+        document.getElementById('btn-download').addEventListener('click', downloadCard);
+
+      } catch(e) {
+        app.innerHTML = noResultHTML();
+      }
+    }
+
+    function downloadCard() {
+      const canvas = document.getElementById('main-canvas');
+      if (!canvas) return;
+
+      try {
+        const link = document.createElement('a');
+        link.download = `mirasuit-${currentData.style}-${currentData.mbti || 'style'}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('卡片已保存');
+      } catch(e) {
+        showToast('保存失败，请长按卡片手动保存');
+      }
+    }
+
+    function noResultHTML() {
+      return `
+        <div class="header">
+          <div class="brand-name">MIRASUIT</div>
+        </div>
+        <div class="no-result">
+          <div class="no-result-icon">📋</div>
+          <div class="no-result-title">暂无风格档案</div>
+          <div class="no-result-desc">先完成风格测试，再生成专属分享卡片</div>
+          <a href="questionnaire.html" class="btn-primary">开始测试</a>
+        </div>
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>
